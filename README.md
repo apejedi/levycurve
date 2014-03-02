@@ -1,36 +1,8 @@
 # levycurve
-
-FIXME: description
-
+A program which generates levy curves with adjustable angles and iterations
 ## Installation
-
-Download from http://example.com/FIXME.
+Needs leinengen installed beforehand
+git clone git://github.com/apejedi/levycurve.git
+lein run
 
 ## Usage
-
-FIXME: explanation
-
-    $ java -jar levycurve-0.1.0-standalone.jar [args]
-
-## Options
-
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
-
-## License
-
-Copyright © 2014 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
