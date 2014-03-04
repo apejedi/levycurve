@@ -13,6 +13,8 @@
   (println "Hello, World!"))
 
 (defn gen-matrix [theta]
+  "Generates a matrix using the given rotation angle used to generate a new coordinate point
+  e.g. (gen-matrix 45) produces a combined rotation-scale matrix with angle 45 degrees"
   (let [radians (Math/toRadians theta)
         rotation [[(Math/cos radians) (Math/sin radians)]
                   [(Math/sin radians) (Math/cos radians)]]
@@ -30,6 +32,8 @@
   )
 
 (defn gen-coord [p1 p2 matrix]
+  "Generates a new coordinate given two coordinates and a transformation matrix
+   e.g. (gen-coord [100 250] [400 250] [[a b] [c d]])"
         (let [[x1 y1] p1
               [x2 y2] p2
               x (Math/abs (- x2 x1))
