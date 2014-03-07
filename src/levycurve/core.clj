@@ -59,14 +59,15 @@
 (defn gen-coord [p1 p2 matrix]
   "Generates a new coordinate given two coordinates and a transformation matrix
    e.g. (gen-coord [100 250] [400 250] [[a b] [c d]])"
-  (let [[x1 y1 x2 y2] (cond
-                       (> (first p1) (first p2))
-                       [p2 p1]
-                       (and (= (first p1) (first p2))
-                            (< (second p1) low))
-                       [p2 p1]
-                       :else [p1 p2]
-                       )
+  (let [[x1 y1 x2 y2] (flatten
+                       (cond
+                        (> (first p1) (first p2))
+                        [p2 p1]
+                        (and (= (first p1) (first p2))
+                             (< (second p1) low))
+                        [p2 p1]
+                        :else [p1 p2]
+                        ))
         ;[x1 y1] p1
         ;[x2 y2] p2
         x (Math/abs (- x2 x1))
