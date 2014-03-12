@@ -1,62 +1,9 @@
 (ns levycurve.core
-  (:gen-class
-   :name levycurve.core
-   (:import (java.awt.Dimension)
-            (java.lang.Math)
-            )
-   (:require '[clojure.zip :as zip])
-   :extends javax.swing.JFrame
-   ))
-(def ^:dynamic *path* (zip/vector-zip [[100 250] [400 250]]))
-(def ^:dynamic *matrix* (gen-matrix 45))
-
-
-(defn -main
-  "Setup UI components
-   Initialize Data Structure"
-  [& args]
+  (:import
+   (java.lang.Math)
+   )
+  (:require [clojure.zip :as zip])
   )
-
-(defn reset []
-  (.clearRect g 0 0 500 500)
-  )
-
-(defn do-iteration []
-  (loop [node (zip/next *path*)]
-    (let [p1 (zip/node node)
-          p2 (-> node zip/right zip/node)
-          p3 (gen-coord p1 p2 *matrix*)
-          new (zip/insert-right node p3)
-          [x1 y1 x2 y2 x3 y3] (flatten [p1 p3 p2])
-          ]
-      (.drawLine g x1 y1 x2 y2)
-      (.drawLine g x2 y2 x3 y3)
-      (if (-> node zip/right zip/right)
-        (recur (-> new zip/right zip/right))
-        (def ^:dynamic *path* (zip/vector-zip (zip/root new)))
-        )
-      )
-    )
-  )
-
-
-;; (defn do-iteration []
-;;   (let [draw (fn [p1 p2]
-;;                  (let [[x1 y1] (flatten p1)
-;;                        [x2 y2] (flatten p2)
-;;                        [x3 y3] (flatten (gen-coord p1 p2 matrix))
-;;                        ]
-;;                    (.drawLine g x1 y1 x3 y3)
-;;                    (.drawLine g x2 y2 x3 y3)
-;;                    [x3 y3]
-;;                    ))
-;;              result (pmap draw path1 path2)
-;;         ]
-;;     (def res result)
-;;     (def low 0)
-;;     (def path1 (vec (concat path1 path2)))
-;;     (def path2 (vec (concat result result)))
-;;     ))
 
 (defn gen-matrix [theta]
   "Generates a matrix using the given rotation angle used to generate a new coordinate point
@@ -93,3 +40,39 @@
     [(+ x x1) (+ y y1)]
     )
   )
+
+(defn do-iteration [path matrix]
+  "Iterates over a doubly linked list adding nodes along the way"
+  (let [path (zip/vector-zip path)]
+      (loop [node (-> path zip/root zip/next)]
+        (let [p1 (zip/node node)
+              p2 (-> node zip/right zip/node)
+              new (zip/insert-right node (gen-coord p1 p2 matrix))
+              ]
+          (if (-> node zip/right zip/right)
+            (recur (-> new zip/right zip/right))
+            (zip/root new)
+            )
+          )
+        )
+    )
+  )
+
+
+;; (defn do-iteration []
+;;   (let [draw (fn [p1 p2]
+;;                  (let [[x1 y1] (flatten p1)
+;;                        [x2 y2] (flatten p2)
+;;                        [x3 y3] (flatten (gen-coord p1 p2 matrix))
+;;                        ]
+;;                    (.drawLine g x1 y1 x3 y3)
+;;                    (.drawLine g x2 y2 x3 y3)
+;;                    [x3 y3]
+;;                    ))
+;;              result (pmap draw path1 path2)
+;;         ]
+;;     (def res result)
+;;     (def low 0)
+;;     (def path1 (vec (concat path1 path2)))
+;;     (def path2 (vec (concat result result)))
+;;     ))
