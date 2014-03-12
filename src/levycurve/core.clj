@@ -43,8 +43,8 @@
 
 (defn do-iteration [path matrix]
   "Iterates over a doubly linked list adding nodes along the way"
-  (let [path (zip/vector-zip path)]
-      (loop [node (-> path zip/root zip/next)]
+  (let [p (zip/vector-zip path)]
+    (loop [node (zip/next p)]
         (let [p1 (zip/node node)
               p2 (-> node zip/right zip/node)
               new (zip/insert-right node (gen-coord p1 p2 matrix))

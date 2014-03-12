@@ -39,8 +39,8 @@
 (defn -setup [ui]
   "Setup UI components, listeners"
   (let [screen-size (.getScreenSize (Toolkit/getDefaultToolkit))
-        width (/ (.width screen-size) 2)
-        height (/ (.height screen-size) 2)
+        width (.width screen-size)
+        height (.height screen-size)
         comp-size (Dimension. 100 20) ;Component Size
         components {:angle-label (JLabel. "Angle")
                     :angle (JTextField. "45")
@@ -57,7 +57,7 @@
         actions {:start (create-listener -start)
                  :step (create-listener -step ui)
                  }
-        img (BufferedImage. width (- height 20) BufferedImage/TYPE_INT_RGB)
+        img (BufferedImage. width (- height 50) BufferedImage/TYPE_INT_RGB)
         graphics (.createGraphics img)
         ]
     (doto ui ;Set size and add state
@@ -74,11 +74,9 @@
       (if (contains? actions name)
         (.addActionListener component (get actions name))
         ))
-
     (doto graphics
       (.setColor Color/black)
       (.fillRect 0 0 (.getWidth img) (.getHeight img))
-      (.setColor Color/red)
       )
     )
   )
@@ -92,39 +90,31 @@
   (.superpaint this g)
   (.drawImage (.getGraphics this) (get @(.state this) :img) 0 50 nil)
   )
-
 (defn -start []
   (println "starting")
   )
 (defn -step [ui]
-  (print "stepping")
-  ;; (let[
-  ;;      path (.getState ui :path)
-  ;;      color (.getState ui :color)
-  ;;      graphics (.getState ui :graphics)
-  ;;      ]
-  ;;   (print path)
-  ;;   (loop [p path col color]
-  ;;     (let [[x1 y1 x2 y2] (take 2 p)
-  ;;           p2 (-> p rest rest)
-  ;;           ]
-  ;;       (print [x1 y1 x2 y2])
-  ;;       (print p)
-  ;;       (if (seq p)
-  ;;         (recur p2 (+ col 10))
-  ;;         )
-        ;; (.setColor graphics (Color. col))
-        ;; (.drawLine graphics x1 y1 x2 y2)
-        ;; (if (seq p)
-        ;;   (recur (-> p rest rest) (+ col 10))
-        ;;   (do
-        ;;     (.setState ui col)
-        ;;     (.setState ui :path (fractal/do-iteration path))
-        ;;     ))
-
-;;        )
-;;      )
-;;    )
+  (let[
+       path (.getState ui :path)
+       color (.getState ui :color)
+       graphics (.getState ui :graphics)
+       angle (.getState ui :angle)
+       matrix (fractal/gen-matrix angle)
+       ]
+    (loop [p path col color]
+      (let [[x1 y1 x2 y2] (flatten (take 2 p))]
+        (.setColor graphics (Color. col))
+        (.drawLine graphics x1 y1 x2 y2)
+        (.repaint ui)
+        (if (seq (-> p rest rest))
+          (recur (rest p) (+ col 10))
+          (do
+            (.setState ui :color col)
+            (.setState ui :path (fractal/do-iteration path matrix))
+            ))
+       )
+     )
+   )
   )
 
 
