@@ -14,7 +14,7 @@
    :extends javax.swing.JFrame
    )
   (:import
-   (javax.swing JButton JTextField JLabel JOptionPane)
+   (javax.swing JButton JTextField JLabel JOptionPane JFileChooser)
    (java.io File)
    (javax.imageio ImageIO)
    (javax.swing.event DocumentListener)
@@ -141,7 +141,14 @@
     )
   )
 (defn -save [ui]
-  (ImageIO/write (.getState ui :img) "png" (File. "Fractal.png"))
+  (let
+      [fc (JFileChooser.)
+       ret (.showSaveDialog fc ui)
+       ]
+    (if (= ret JFileChooser/APPROVE_OPTION)
+      (ImageIO/write (.getState ui :img) "png" (.getSelectedFile fc))
+      )
+    )
   )
 (defn -reset [this & clearpath]
   (let [
@@ -151,6 +158,7 @@
     (.flush img)
     (.setColor graphics Color/black)
     (.fillRect graphics 0 0 (.getWidth img) (.getHeight img))
+    (.setColor graphics Color/red)
     (.repaint this)
     )
   (if clearpath
